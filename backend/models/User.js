@@ -10,8 +10,13 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     validate: {
-        validator: v => validator.isEmail(v) && v.endsWith('@iiitdmj.ac.in'),
-        message: 'Please provide a valid IIITDMJ email (@iiitdmj.ac.in)'
+        // V-- THIS IS THE UPDATED VALIDATION LOGIC --V
+        validator: function(v) {
+            // Regex to match format like: 24bec103@iiitdmj.ac.in
+            const rollNumberRegex = /^\d{2}[a-zA-Z]+\d{3}@iiitdmj\.ac\.in$/;
+            return rollNumberRegex.test(v);
+        },
+        message: 'Please use a valid IIITDMJ roll number email format (e.g., 24bec103@iiitdmj.ac.in)'
     }
   },
   phone: { type: String, required: [true, 'Please provide your phone number'], unique: true },
