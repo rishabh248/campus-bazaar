@@ -10,7 +10,8 @@ export default {
         sans: ['Inter', 'sans-serif'],
       },
       backgroundImage: {
-        'hero-pattern': "url('/hero-bg.jpg')",
+        // V-- UPDATED to use .jpeg --V
+        'hero-pattern': "url('/Hero-bg.jpeg')",
       }
     },
   },
@@ -19,7 +20,7 @@ export default {
     themes: [
       {
         campusBazaarLight: {
-          "primary": "#D97706", // A nice, rich orange
+          "primary": "#D97706",
           "secondary": "#F97316",
           "accent": "#37CDBE",
           "neutral": "#3D4451",
@@ -30,7 +31,7 @@ export default {
           "error": "#F87272",
         },
         campusBazaarDark: {
-          "primary": "#F97316", // A brighter orange for dark mode
+          "primary": "#F97316",
           "secondary": "#EA580C",
           "accent": "#37CDBE",
           "neutral": "#191D24",
@@ -41,7 +42,6 @@ export default {
           "error": "#F87272",
         },
       },
-      // You can keep the default light and dark if you want to switch back
       "light",
       "dark",
     ],
