@@ -3,8 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import Spinner from '../components/ui/Spinner';
-import toast from 'react-hot-toast';
-import { FaEdit, FaTrash, FaEye, FaBoxOpen, FaCheckCircle, FaHeart, FaStar, FaEnvelope } from 'react-icons/fa';
+import toast from 'react-hot-toast'; 
+import { FaEdit, FaTrash, FaEye, FaBoxOpen, FaCheckCircle, FaHeart, FaStar, FaCopy } from 'react-icons/fa'; 
 
 const StatCard = ({ icon, title, value, isLoading }) => (
     <div className="card bg-base-100 shadow">
@@ -49,9 +49,19 @@ const Dashboard = () => {
     const activeListings = myProducts?.filter(p => p.status === 'available').length || 0;
     const totalInterest = myProducts?.reduce((acc, p) => acc + (p.interestedBuyers?.length || 0), 0) || 0;
 
-    
-    const contactEmail = "rishabhc0026@gmail.com"; 
-    const mailtoLink = `mailto:${contactEmail}?subject=Inquiry about Featuring Product on Campus Bazaar`;
+   
+    const contactEmail = "rishabhc0026@gmail.com";
+
+   
+    const handleCopyEmail = async () => {
+        try {
+            await navigator.clipboard.writeText(contactEmail);
+            toast.success('Contact email copied to clipboard!');
+        } catch (err) {
+            console.error('Failed to copy email: ', err);
+            toast.error('Could not copy email.');
+        }
+    };
 
     return (
         <div className="max-w-7xl mx-auto">
@@ -66,20 +76,20 @@ const Dashboard = () => {
             <h2 className="text-3xl font-bold mb-4">Your Products</h2>
 
             
-            <div className="alert alert-info shadow-sm mb-6 items-start md:items-center bg-info-content text-white"> 
+            <div className="alert alert-info shadow-sm mb-6 items-start md:items-center bg-info-content text-white">
               <FaStar className="text-xl mr-2 flex-shrink-0 mt-1 md:mt-0"/>
               <div className="flex-1">
-                <h3 className="font-bold text-white">Want more visibility?</h3> 
-                <div className="text-xs md:text-sm text-white"> 
-                    Feature your listing on the homepage!{' '}
-                    <a href={mailtoLink} className="link link-accent font-semibold hover:underline"> 
-                        Contact us
-                    </a>{' '}
-                    to learn more.
+                <h3 className="font-bold text-white">Want more visibility?</h3>
+                <div className="text-xs md:text-sm text-white">
+                    Feature your listing on the homepage! Click the button to copy our contact email.
                 </div>
               </div>
+             
+              <button onClick={handleCopyEmail} className="btn btn-sm btn-accent">
+                    <FaCopy className="mr-1"/> Copy Email
+              </button>
             </div>
-            
+           
 
 
             {isLoadingMyProducts ? <div className="flex justify-center"><Spinner /></div> :
