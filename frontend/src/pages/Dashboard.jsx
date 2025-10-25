@@ -1,10 +1,10 @@
 import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; // Added useMutation, useQueryClient
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import Spinner from '../components/ui/Spinner';
-import toast from 'react-hot-toast'; // Added toast
-import { FaEdit, FaTrash, FaEye, FaBoxOpen, FaCheckCircle, FaHeart } from 'react-icons/fa';
+import toast from 'react-hot-toast';
+import { FaEdit, FaTrash, FaEye, FaBoxOpen, FaCheckCircle, FaHeart, FaStar, FaEnvelope } from 'react-icons/fa'; // Added FaStar, FaEnvelope
 
 const StatCard = ({ icon, title, value, isLoading }) => (
     <div className="card bg-base-100 shadow">
@@ -22,20 +22,19 @@ const StatCard = ({ icon, title, value, isLoading }) => (
 
 
 const Dashboard = () => {
-    const queryClient = useQueryClient(); // Added queryClient
+    const queryClient = useQueryClient();
 
     const { data: myProducts, isLoading: isLoadingMyProducts } = useQuery({
         queryKey: ['myProducts'],
         queryFn: () => api.get('/products/my').then(res => res.data),
     });
 
-     // Delete Mutation (copied from AdminPanel.jsx logic)
     const deleteProductMutation = useMutation({
-        mutationFn: (prodId) => api.delete(`/products/${prodId}`), // Use standard product delete endpoint
+        mutationFn: (prodId) => api.delete(`/products/${prodId}`),
         onSuccess: () => {
             toast.success('Product deleted.');
-            queryClient.invalidateQueries({ queryKey: ['myProducts'] }); // Invalidate myProducts query
-             queryClient.invalidateQueries({ queryKey: ['allProducts'] }); // Also invalidate allProducts if needed elsewhere
+            queryClient.invalidateQueries({ queryKey: ['myProducts'] });
+            queryClient.invalidateQueries({ queryKey: ['allProducts'] });
         },
         onError: (err) => toast.error(err.response?.data?.message || 'Failed to delete product.')
     });
@@ -46,10 +45,12 @@ const Dashboard = () => {
         }
     };
 
-
     const totalListings = myProducts?.length || 0;
     const activeListings = myProducts?.filter(p => p.status === 'available').length || 0;
-    const totalInterest = myProducts?.reduce((acc, p) => acc + (p.interestedBuyers?.length || 0), 0) || 0; // Safer reduce
+    const totalInterest = myProducts?.reduce((acc, p) => acc + (p.interestedBuyers?.length || 0), 0) || 0;
+
+    // --- YOUR CONTACT EMAIL ---
+    const contactEmail = "campus.bazaar.iiitdmj@gmail.com"; // Replace with your actual contact email
 
     return (
         <div className="max-w-7xl mx-auto">
@@ -61,7 +62,25 @@ const Dashboard = () => {
                 <StatCard icon={<FaHeart className="text-2xl text-primary" />} title="Total Interest" value={totalInterest} isLoading={isLoadingMyProducts}/>
             </div>
 
-            <h2 className="text-3xl font-bold mb-6">Your Products</h2>
+            <h2 className="text-3xl font-bold mb-4">Your Products</h2>
+
+            {/* V-- NEW MESSAGE BLOCK ADDED HERE --V */}
+            <div className="alert alert-info shadow-sm mb-6">
+              <div className="flex-1">
+                <FaStar className="text-xl mr-2"/>
+                <div>
+                  <h3 className="font-bold">Want more visibility?</h3>
+                  <div className="text-xs">Feature your listing on the homepage! Contact us to learn more.</div>
+                </div>
+              </div>
+              <div className="flex-none">
+                <a href={`mailto:${contactEmail}?subject=Inquiry about Featuring Product on Campus Bazaar`} className="btn btn-sm btn-outline">
+                  <FaEnvelope className="mr-1"/> Contact Us
+                </a>
+              </div>
+            </div>
+            {/* ^-- END OF NEW MESSAGE BLOCK --^ */}
+
 
             {isLoadingMyProducts ? <div className="flex justify-center"><Spinner /></div> :
             totalListings === 0 ? (
@@ -89,7 +108,7 @@ const Dashboard = () => {
                             {myProducts.map(p => (
                                 <tr key={p._id} className="hover">
                                     <td className="max-w-xs truncate">{p.title}</td>
-                                    <td>?{p.price}</td>
+                                    <td>₹{p.price}</td>
                                     <td><span className={`badge ${p.status === 'sold' ? 'badge-ghost' : 'badge-success'}`}>{p.status}</span></td>
                                     <td>{p.interestedBuyers?.length || 0}</td>
                                     <td className="flex gap-1 md:gap-2">
