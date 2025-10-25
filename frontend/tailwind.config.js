@@ -10,7 +10,7 @@ export default {
         sans: ['Inter', 'sans-serif'],
       },
       backgroundImage: {
-        // V-- UPDATED to use .jpeg --V
+        
         'hero-pattern': "url('/Hero-bg.jpeg')",
       }
     },

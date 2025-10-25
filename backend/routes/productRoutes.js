@@ -10,8 +10,12 @@ const {
 } = require('../controllers/productController');
 const { protect } = require('../middleware/authMiddleware');
 
-router.route('/').get(getProducts).post(protect, createProduct);
+router.get('/', getProducts); // Publicly accessible
 router.get('/my', protect, getMyProducts);
-router.route('/:id').get(getProductById).put(protect, updateProduct).delete(protect, deleteProduct);
+router.get('/:id', getProductById); // Publicly accessible
+
+router.post('/', protect, createProduct);
+router.put('/:id', protect, updateProduct);
+router.delete('/:id', protect, deleteProduct);
 
 module.exports = router;

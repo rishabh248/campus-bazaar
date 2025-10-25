@@ -1,16 +1,12 @@
 const asyncHandler = require('express-async-handler');
 const { uploadToCloudinary } = require('../config/cloudinary');
 
-// @desc    Upload images to Cloudinary
-// @route   POST /api/upload/images
-// @access  Private
 const uploadImages = asyncHandler(async (req, res) => {
     if (!req.files || req.files.length === 0) {
         res.status(400);
         throw new Error('No files uploaded.');
     }
-    
-    // Max 5 images
+
     if (req.files.length > 5) {
         res.status(400);
         throw new Error('Cannot upload more than 5 images at a time.');
@@ -20,7 +16,7 @@ const uploadImages = asyncHandler(async (req, res) => {
         return uploadToCloudinary(file.buffer, {
             folder: 'campus-bazaar',
             resource_type: 'image',
-            transformation: [{ width: 800, height: 800, crop: 'limit' }]
+            transformation: [{ width: 800, height: 800, crop: 'limit', quality: 'auto' }] // Added auto quality
         });
     });
 

@@ -11,17 +11,18 @@ const protect = asyncHandler(async (req, res, next) => {
       req.user = await User.findById(decoded.id).select('-password');
       if (!req.user) {
         res.status(401);
-        throw new Error('User not found');
+        throw new Error('User not found for this token');
       }
       next();
     } catch (error) {
+      console.error('Token verification failed:', error.message);
       res.status(401);
       throw new Error('Not authorized, token failed');
     }
   }
   if (!token) {
     res.status(401);
-    throw new Error('Not authorized, no token');
+    throw new Error('Not authorized, no token provided');
   }
 });
 
@@ -30,7 +31,7 @@ const admin = (req, res, next) => {
     next();
   } else {
     res.status(403);
-    throw new Error('Not authorized as an admin');
+    throw new Error('Forbidden: User is not an admin');
   }
 };
 

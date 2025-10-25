@@ -13,7 +13,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminRoute from './components/auth/AdminRoute';
 import EditProduct from './pages/EditProduct';
 import ChatPage from './pages/Chat';
-import BrowseProductsPage from './pages/BrowseProducts'; // 1. Import the new page
+import BrowseProductsPage from './pages/BrowseProducts';
 
 function App() {
   return (
@@ -21,14 +21,12 @@ function App() {
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8">
         <Routes>
-          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/products" element={<BrowseProductsPage />} /> {/* 2. Add the new route */}
-          
-          {/* Protected User Routes */}
+          <Route path="/products" element={<BrowseProductsPage />} />
+
           <Route element={<ProtectedRoute />}>
             <Route path="/sell" element={<CreateProduct />} />
             <Route path="/product/:id/edit" element={<EditProduct />} />
@@ -36,12 +34,10 @@ function App() {
             <Route path="/chat" element={<ChatPage />} />
           </Route>
 
-          {/* Protected Admin Routes */}
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminPanel />} />
           </Route>
 
-          {/* Catch-all Not Found Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'Please provide your name'], trim: true },
@@ -10,14 +9,13 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     validate: {
-        // V-- THIS IS THE UPDATED VALIDATION LOGIC --V
         validator: function(v) {
-            // Regex to match format like: 24bec103@iiitdmj.ac.in
-            const rollNumberRegex = /^\d{2}[a-zA-Z]+\d{3}@iiitdmj\.ac\.in$/;
+            const rollNumberRegex = /^\d{2}(bec|bcs|bds|bme|bsm)\d{3}@iiitdmj\.ac\.in$/i;
             return rollNumberRegex.test(v);
         },
-        message: 'Please use a valid IIITDMJ roll number email format (e.g., 24bec103@iiitdmj.ac.in)'
-    }
+        message: 'Invalid IIITDMJ email. Use format like 24bec103@iiitdmj.ac.in (check branch code)'
+    },
+    index: true // Index email for faster lookups
   },
   phone: { type: String, required: [true, 'Please provide your phone number'], unique: true },
   password: { type: String, required: [true, 'Please provide a password'], minlength: 6, select: false },

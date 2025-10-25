@@ -16,17 +16,19 @@ const EditProduct = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    const { data: product, isLoading, error } = useQuery({
+    const { data: product, isLoading, error, isError } = useQuery({ // Added isError
         queryKey: ['product', id],
         queryFn: () => fetchProduct(id),
+        retry: 1 // Retry only once on error
     });
 
     const updateMutation = useMutation({
         mutationFn: (updatedProduct) => api.put(`/products/${id}`, updatedProduct),
-        onSuccess: () => {
+        onSuccess: (data) => { // Access updated data if needed
             toast.success("Product updated successfully!");
-            queryClient.invalidateQueries(['product', id]);
-            queryClient.invalidateQueries(['products']);
+            queryClient.invalidateQueries({ queryKey: ['product', id] });
+            queryClient.invalidateQueries({ queryKey: ['myProducts'] }); // Also invalidate user's product list
+            queryClient.invalidateQueries({ queryKey: ['allProducts'] }); // And global product list
             navigate(`/product/${id}`);
         },
         onError: (err) => {
@@ -38,8 +40,14 @@ const EditProduct = () => {
         updateMutation.mutate(data);
     };
 
-    if (isLoading) return <div className="flex justify-center mt-10"><Spinner size="lg" /></div>;
-    if (error) return <div className="text-center text-error">Error: {error.message}</div>;
+    if (isLoading) {
+        return <div className="flex justify-center items-center h-64"><Spinner size="lg" /></div>;
+     }
+
+    if (isError || !product) { // Handle case where product fetch fails or returns no data
+        return <div className="text-center text-error p-10">Error loading product data: {error?.message || 'Product not found'}</div>;
+     }
+
 
     return (
         <div className="max-w-2xl mx-auto p-4">

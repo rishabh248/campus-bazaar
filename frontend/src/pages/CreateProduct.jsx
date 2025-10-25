@@ -16,7 +16,8 @@ const CreateProduct = () => {
         mutationFn: (newProduct) => api.post('/products', newProduct),
         onSuccess: (data) => {
             toast.success("Product created successfully!");
-            queryClient.invalidateQueries(['products']);
+            queryClient.invalidateQueries({ queryKey: ['myProducts'] }); // Invalidate myProducts as well
+            queryClient.invalidateQueries({ queryKey: ['allProducts'] });
             navigate(`/product/${data.data._id}`);
         },
         onError: (err) => {
@@ -48,7 +49,7 @@ const CreateProduct = () => {
             setIsUploading(false);
         }
     };
-    
+
     const removeImage = (index) => {
         setImages(prev => prev.filter((_, i) => i !== index));
     };
@@ -68,14 +69,15 @@ const CreateProduct = () => {
                 <div>
                      <h3 className="text-xl font-semibold mb-2">Upload Images (Max 5)</h3>
                      <div className="form-control w-full">
-                        <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="file-input file-input-bordered w-full" disabled={isUploading || images.length >= 5} />
+                        <label htmlFor="imageUpload" className="label"><span className="label-text">Select Images</span></label>
+                        <input id="imageUpload" type="file" multiple accept="image/*" onChange={handleImageUpload} className="file-input file-input-bordered w-full" disabled={isUploading || images.length >= 5} />
                         {isUploading && <progress className="progress w-full mt-2"></progress>}
                      </div>
-                     <div className="grid grid-cols-3 gap-2 mt-4">
+                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 gap-2 mt-4">
                         {images.map((img, index) => (
-                            <div key={index} className="relative">
-                                <img src={img.url} alt="upload preview" className="w-full h-24 object-cover rounded" />
-                                <button onClick={() => removeImage(index)} className="btn btn-xs btn-circle btn-error absolute -top-2 -right-2"><FaTrash/></button>
+                            <div key={img.public_id || index} className="relative aspect-square">
+                                <img src={img.url} alt={`Upload preview ${index + 1}`} className="w-full h-full object-cover rounded shadow" />
+                                <button onClick={() => removeImage(index)} className="btn btn-xs btn-circle btn-error absolute -top-2 -right-2" aria-label={`Remove image ${index + 1}`}><FaTrash/></button>
                             </div>
                         ))}
                      </div>

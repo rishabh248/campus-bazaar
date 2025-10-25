@@ -29,11 +29,8 @@ connectDB();
 
 const app = express();
 
-// V-- THIS IS THE FIX --V
-// Trust the first proxy in front of the app (e.g., Render's load balancer)
 app.set('trust proxy', 1);
 
-// --- Middleware ---
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
@@ -53,7 +50,6 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 
 
-// --- API Routes ---
 app.get('/api', (req, res) => res.json({ message: 'Welcome to Campus Bazaar API' }));
 app.use('/api', apiLimiter);
 app.use('/api/auth', authRoutes);
@@ -66,9 +62,9 @@ app.use('/api/chat', chatRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const server = http.createServer(app); 
+const server = http.createServer(app);
 
-const io = new Server(server, { 
+const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
     origin: process.env.CORS_ORIGIN,
@@ -77,42 +73,54 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-  console.log('🔌 A user connected to Socket.IO');
+  console.log('Socket.IO User Connected:', socket.id);
 
   socket.on('setup', (userId) => {
     socket.join(userId);
-    console.log(`User ${userId} joined their personal room.`);
+    console.log(`User ${userId} joined room ${userId}`);
     socket.emit('connected');
   });
 
   socket.on('join chat', (room) => {
     socket.join(room);
-    console.log('User joined room: ' + room);
+    console.log(`User ${socket.id} joined chat room: ${room}`);
   });
 
   socket.on('new message', async (newMessage) => {
     const { conversationId, senderId, content } = newMessage;
+    if (!conversationId || !senderId || !content) {
+        console.error('Invalid message data received:', newMessage);
+        return; // Prevent processing invalid messages
+    }
+
     try {
       let msg = await Message.create({ conversation: conversationId, sender: senderId, content: content });
       msg = await msg.populate('sender', 'name');
-      msg = await msg.populate({ path: 'conversation', populate: { path: 'participants', select: 'name' } });
+      msg = await msg.populate({ path: 'conversation', populate: { path: 'participants', select: '_id name' } }); // Populate IDs
+
+      if (!msg.conversation) {
+          console.error('Conversation not found for message:', msg);
+          return;
+      }
+
       await Conversation.findByIdAndUpdate(conversationId, { lastMessage: msg._id });
 
-      msg.conversation.participants.forEach((user) => {
-        if (user._id.toString() === senderId) return;
-        io.to(user._id.toString()).emit('message received', msg);
+      msg.conversation.participants.forEach((participant) => {
+        if (participant._id.toString() === senderId) return; // Don't emit to sender
+        // Emit message specifically to the other participant's room
+        io.to(participant._id.toString()).emit('message received', msg);
       });
     } catch (error) {
-      console.error('Error handling new message:', error);
+      console.error('Error processing new message:', error);
     }
   });
 
   socket.on('disconnect', () => {
-    console.log('👋 User disconnected');
+    console.log('Socket.IO User Disconnected:', socket.id);
   });
 });
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });

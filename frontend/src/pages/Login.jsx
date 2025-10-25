@@ -9,11 +9,11 @@ const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || '/';
+    const from = location.state?.from?.pathname || '/dashboard'; // Redirect to dashboard on successful login
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (formData) => {
         try {
-            await login(data.email, data.password);
+            await login(formData.email, formData.password);
             navigate(from, { replace: true });
         } catch (error) {
             toast.error(error.response?.data?.message || "Login failed. Please check your credentials.");
@@ -21,21 +21,35 @@ const Login = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-[70vh] px-4">
+        <div className="flex items-center justify-center min-h-[70vh] px-4 py-12">
             <div className="card w-full max-w-md shadow-2xl bg-base-100">
                 <form onSubmit={handleSubmit(onSubmit)} className="card-body">
-                    <div className="text-center">
+                    <div className="text-center mb-6">
                         <h1 className="text-2xl font-bold">Login to Campus Bazaar</h1>
-                        <p className="text-base-content/70">Use your IIITDM Jabalpur email to access the marketplace</p>
+                        <p className="text-base-content/70 mt-1">Use your IIITDM Jabalpur email</p>
                     </div>
                     <div className="form-control">
-                        <label className="label"><span className="label-text">Email</span></label>
-                        <input type="email" placeholder="rollnumber@iiitdmj.ac.in" {...register("email", { required: "Email is required" })} className={`input input-bordered ${errors.email ? 'input-error' : ''}`} />
+                        <label htmlFor="email" className="label"><span className="label-text">Email</span></label>
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="rollnumber@iiitdmj.ac.in"
+                            {...register("email", { required: "Email is required" })}
+                            className={`input input-bordered ${errors.email ? 'input-error' : ''}`}
+                            aria-invalid={errors.email ? "true" : "false"}
+                         />
                         {errors.email && <span className="text-error text-xs mt-1">{errors.email.message}</span>}
                     </div>
                     <div className="form-control">
-                        <label className="label"><span className="label-text">Password</span></label>
-                        <input type="password" placeholder="password" {...register("password", { required: "Password is required" })} className={`input input-bordered ${errors.password ? 'input-error' : ''}`} />
+                        <label htmlFor="password"className="label"><span className="label-text">Password</span></label>
+                        <input
+                            id="password"
+                            type="password"
+                            placeholder="password"
+                            {...register("password", { required: "Password is required" })}
+                             className={`input input-bordered ${errors.password ? 'input-error' : ''}`}
+                             aria-invalid={errors.password ? "true" : "false"}
+                        />
                          {errors.password && <span className="text-error text-xs mt-1">{errors.password.message}</span>}
                     </div>
                     <div className="form-control mt-6">

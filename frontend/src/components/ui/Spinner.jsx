@@ -6,7 +6,15 @@ const Spinner = ({ size = 'md' }) => {
         md: 'loading-md',
         lg: 'loading-lg'
     };
-    return <span className={`loading loading-spinner text-primary ${sizeClasses[size]}`}></span>;
+    return (
+        <span
+            className={`loading loading-spinner text-primary ${sizeClasses[size]}`}
+            role="status"
+            aria-live="polite"
+        >
+            <span className="sr-only">Loading...</span>
+        </span>
+    );
 };
 
 export default Spinner;

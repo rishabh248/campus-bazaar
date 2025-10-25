@@ -22,5 +22,7 @@ const conversationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+conversationSchema.index({ participants: 1 }); // Index for faster querying by user
+
 const Conversation = mongoose.model('Conversation', conversationSchema);
 module.exports = Conversation;

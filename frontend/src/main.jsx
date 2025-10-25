@@ -8,7 +8,7 @@ import { ThemeProvider } from './contexts/ThemeContext.jsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
-import { SocketProvider } from './contexts/SocketContext.jsx'; // 1. Import SocketProvider
+import { SocketProvider } from './contexts/SocketContext.jsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,7 +25,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <AuthProvider>
-            {/* 2. Wrap the App with SocketProvider */}
             <SocketProvider>
               <App />
             </SocketProvider>

@@ -3,25 +3,19 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const mongoose = require('mongoose');
 
-// @desc    Get all products with filtering, searching, and pagination
-// @route   GET /api/products
-// @access  Public
 const getProducts = asyncHandler(async (req, res) => {
     const { search, category, status, minPrice, maxPrice, sortBy } = req.query;
     let query = {};
 
-    // --- Build Query based on filters ---
     if (search) {
         query.$text = { $search: search };
     }
     if (category) {
         query.category = category;
     }
-    
-    // Default to 'available' unless a different status is specified
+
     query.status = status || 'available';
 
-    // Price range filtering
     if (minPrice || maxPrice) {
         query.price = {};
         if (minPrice) {
@@ -32,8 +26,7 @@ const getProducts = asyncHandler(async (req, res) => {
         }
     }
 
-    // --- Build Sort object ---
-    let sortOptions = { createdAt: -1 }; // Default sort: newest first
+    let sortOptions = { createdAt: -1 };
     if (sortBy) {
         switch (sortBy) {
             case 'price-asc':
@@ -47,7 +40,7 @@ const getProducts = asyncHandler(async (req, res) => {
                 break;
         }
     }
-    
+
     const products = await Product.find(query)
         .populate('seller', 'name')
         .sort(sortOptions);
@@ -55,13 +48,10 @@ const getProducts = asyncHandler(async (req, res) => {
     res.json(products);
 });
 
-// @desc    Get a single product by ID
-// @route   GET /api/products/:id
-// @access  Public
 const getProductById = asyncHandler(async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         res.status(404);
-        throw new Error('Product not found');
+        throw new Error('Invalid product ID');
     }
     const product = await Product.findById(req.params.id).populate('seller', 'name batch department');
     if (product) {
@@ -72,9 +62,6 @@ const getProductById = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Create a new product
-// @route   POST /api/products
-// @access  Private
 const createProduct = asyncHandler(async (req, res) => {
     const { title, description, price, category, condition, images } = req.body;
 
@@ -97,9 +84,6 @@ const createProduct = asyncHandler(async (req, res) => {
     res.status(201).json(createdProduct);
 });
 
-// @desc    Update a product
-// @route   PUT /api/products/:id
-// @access  Private
 const updateProduct = asyncHandler(async (req, res) => {
     const { title, description, price, category, condition, status } = req.body;
     const product = await Product.findById(req.params.id);
@@ -116,7 +100,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 
     product.title = title || product.title;
     product.description = description || product.description;
-    product.price = price || product.price;
+    product.price = price === undefined ? product.price : price; // Handle 0 price
     product.category = category || product.category;
     product.condition = condition || product.condition;
     product.status = status || product.status;
@@ -125,9 +109,6 @@ const updateProduct = asyncHandler(async (req, res) => {
     res.json(updatedProduct);
 });
 
-// @desc    Delete a product
-// @route   DELETE /api/products/:id
-// @access  Private
 const deleteProduct = asyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
 
@@ -145,9 +126,6 @@ const deleteProduct = asyncHandler(async (req, res) => {
     res.json({ message: 'Product removed successfully' });
 });
 
-// @desc    Get products listed by the current user
-// @route   GET /api/products/my
-// @access  Private
 const getMyProducts = asyncHandler(async (req, res) => {
     const products = await Product.find({ seller: req.user._id }).sort({ createdAt: -1 });
     res.json(products);

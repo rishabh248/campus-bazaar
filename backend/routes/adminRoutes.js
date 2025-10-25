@@ -9,13 +9,13 @@ const {
     toggleFeatureProduct
 } = require('../controllers/adminController');
 
-router.use(protect, admin); // Protect all routes in this file
+router.use(protect, admin);
 
-router.route('/users').get(getAllUsers);
-router.route('/users/:id').delete(deleteUser);
+router.get('/users', getAllUsers);
+router.delete('/users/:id', deleteUser);
 
-router.route('/products').get(getAllProducts);
-router.route('/products/:id').delete(deleteProduct);
-router.route('/products/:id/feature').put(toggleFeatureProduct);
+router.get('/products', getAllProducts);
+router.delete('/products/:id', deleteProduct);
+router.put('/products/:id/feature', toggleFeatureProduct);
 
 module.exports = router;

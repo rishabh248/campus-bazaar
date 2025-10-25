@@ -7,10 +7,10 @@ const {
   getMessages,
 } = require('../controllers/chatController');
 
-// All routes in this file are protected
 router.use(protect);
 
-router.route('/').post(startConversation).get(getMyConversations);
-router.route('/:id/messages').get(getMessages);
+router.post('/', startConversation);
+router.get('/', getMyConversations);
+router.get('/:id/messages', getMessages);
 
 module.exports = router;

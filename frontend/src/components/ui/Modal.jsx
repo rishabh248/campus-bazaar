@@ -12,7 +12,7 @@ const Modal = ({ id, title, children, onClose }) => {
           </form>
         </div>
       </div>
-       <form method="dialog" className="modal-backdrop">
+      <form method="dialog" className="modal-backdrop">
         <button onClick={onClose}>close</button>
       </form>
     </dialog>

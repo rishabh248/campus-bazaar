@@ -9,37 +9,34 @@ const AdminPanel = () => {
     const [activeTab, setActiveTab] = useState('users');
     const queryClient = useQueryClient();
 
-    // Fetch Users
     const { data: users, isLoading: isLoadingUsers } = useQuery({
         queryKey: ['allUsers'],
         queryFn: () => api.get('/admin/users').then(res => res.data)
     });
 
-    // Fetch Products
     const { data: products, isLoading: isLoadingProducts } = useQuery({
         queryKey: ['allProducts'],
         queryFn: () => api.get('/admin/products').then(res => res.data)
     });
-    
-    // Mutations
+
     const deleteUserMutation = useMutation({
         mutationFn: (userId) => api.delete(`/admin/users/${userId}`),
-        onSuccess: () => { toast.success('User deleted.'); queryClient.invalidateQueries(['allUsers']); },
+        onSuccess: () => { toast.success('User deleted.'); queryClient.invalidateQueries({ queryKey: ['allUsers'] }); },
         onError: (err) => toast.error(err.response?.data?.message)
     });
 
     const deleteProductMutation = useMutation({
         mutationFn: (prodId) => api.delete(`/admin/products/${prodId}`),
-        onSuccess: () => { toast.success('Product deleted.'); queryClient.invalidateQueries(['allProducts']); },
+        onSuccess: () => { toast.success('Product deleted.'); queryClient.invalidateQueries({ queryKey: ['allProducts'] }); },
         onError: (err) => toast.error(err.response?.data?.message)
     });
-    
+
     const toggleFeatureMutation = useMutation({
         mutationFn: (prodId) => api.put(`/admin/products/${prodId}/feature`),
-        onSuccess: () => { toast.success('Feature status toggled.'); queryClient.invalidateQueries(['allProducts']); },
+        onSuccess: () => { toast.success('Feature status toggled.'); queryClient.invalidateQueries({ queryKey: ['allProducts'] }); },
         onError: (err) => toast.error(err.response?.data?.message)
     });
-    
+
     const renderUsers = () => (
         isLoadingUsers ? <Spinner/> :
         <div className="overflow-x-auto"><table className="table w-full">
@@ -51,7 +48,7 @@ const AdminPanel = () => {
             ))}</tbody>
         </table></div>
     );
-    
+
      const renderProducts = () => (
         isLoadingProducts ? <Spinner/> :
         <div className="overflow-x-auto"><table className="table w-full">
@@ -59,7 +56,7 @@ const AdminPanel = () => {
             <tbody>{products.map(p => (
                 <tr key={p._id}>
                     <td>{p.title}</td><td>{p.seller.name}</td><td>?{p.price}</td>
-                    <td><button onClick={() => toggleFeatureMutation.mutate(p._id)} className="btn btn-xs">{p.isFeatured ? <FaToggleOn className="text-success"/> : <FaToggleOff/>}</button></td>
+                    <td><button onClick={() => toggleFeatureMutation.mutate(p._id)} className="btn btn-xs btn-ghost">{p.isFeatured ? <FaToggleOn className="text-success text-lg"/> : <FaToggleOff className="text-lg"/>}</button></td>
                     <td><button onClick={() => deleteProductMutation.mutate(p._id)} className="btn btn-xs btn-error" disabled={deleteProductMutation.isPending}><FaTrash/></button></td>
                 </tr>
             ))}</tbody>
@@ -70,8 +67,8 @@ const AdminPanel = () => {
         <div>
             <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
             <div role="tablist" className="tabs tabs-lifted">
-                <a role="tab" className={`tab ${activeTab === 'users' && 'tab-active'}`} onClick={() => setActiveTab('users')}>Manage Users ({users?.length || 0})</a>
-                <a role="tab" className={`tab ${activeTab === 'products' && 'tab-active'}`} onClick={() => setActiveTab('products')}>Manage Products ({products?.length || 0})</a>
+                <a role="tab" className={`tab ${activeTab === 'users' ? 'tab-active' : ''}`} onClick={() => setActiveTab('users')}>Manage Users ({users?.length || 0})</a>
+                <a role="tab" className={`tab ${activeTab === 'products' ? 'tab-active' : ''}`} onClick={() => setActiveTab('products')}>Manage Products ({products?.length || 0})</a>
             </div>
             <div className="p-4 bg-base-200 rounded-b-box">
                 {activeTab === 'users' && renderUsers()}
