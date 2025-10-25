@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import Spinner from '../components/ui/Spinner';
 import toast from 'react-hot-toast';
-import { FaEdit, FaTrash, FaEye, FaBoxOpen, FaCheckCircle, FaHeart, FaStar, FaEnvelope } from 'react-icons/fa'; // Added FaStar, FaEnvelope
+import { FaEdit, FaTrash, FaEye, FaBoxOpen, FaCheckCircle, FaHeart, FaStar, FaEnvelope } from 'react-icons/fa';
 
 const StatCard = ({ icon, title, value, isLoading }) => (
     <div className="card bg-base-100 shadow">
@@ -49,8 +49,9 @@ const Dashboard = () => {
     const activeListings = myProducts?.filter(p => p.status === 'available').length || 0;
     const totalInterest = myProducts?.reduce((acc, p) => acc + (p.interestedBuyers?.length || 0), 0) || 0;
 
-    // --- YOUR CONTACT EMAIL ---
-    const contactEmail = "campus.bazaar.iiitdmj@gmail.com"; // Replace with your actual contact email
+   
+    const contactEmail = "campus.bazaar.iiitdmj@gmail.com"; 
+    const mailtoLink = `mailto:${contactEmail}?subject=Inquiry about Featuring Product on Campus Bazaar`;
 
     return (
         <div className="max-w-7xl mx-auto">
@@ -64,22 +65,22 @@ const Dashboard = () => {
 
             <h2 className="text-3xl font-bold mb-4">Your Products</h2>
 
-            {/* V-- NEW MESSAGE BLOCK ADDED HERE --V */}
-            <div className="alert alert-info shadow-sm mb-6">
+            
+            <div className="alert alert-info shadow-sm mb-6 items-start md:items-center"> 
+              <FaStar className="text-xl mr-2 flex-shrink-0 mt-1 md:mt-0"/> 
               <div className="flex-1">
-                <FaStar className="text-xl mr-2"/>
-                <div>
-                  <h3 className="font-bold">Want more visibility?</h3>
-                  <div className="text-xs">Feature your listing on the homepage! Contact us to learn more.</div>
+                <h3 className="font-bold">Want more visibility?</h3>
+                <div className="text-xs md:text-sm"> 
+                    Feature your listing on the homepage! Contact us at{' '}
+                    <a href={mailtoLink} className="link link-primary font-semibold hover:underline">
+                        {contactEmail}
+                    </a>{' '}
+                    to learn more.
                 </div>
               </div>
-              <div className="flex-none">
-                <a href={`mailto:${contactEmail}?subject=Inquiry about Featuring Product on Campus Bazaar`} className="btn btn-sm btn-outline">
-                  <FaEnvelope className="mr-1"/> Contact Us
-                </a>
-              </div>
+           
             </div>
-            {/* ^-- END OF NEW MESSAGE BLOCK --^ */}
+           
 
 
             {isLoadingMyProducts ? <div className="flex justify-center"><Spinner /></div> :
