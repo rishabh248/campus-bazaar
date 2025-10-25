@@ -49,8 +49,8 @@ const Dashboard = () => {
     const activeListings = myProducts?.filter(p => p.status === 'available').length || 0;
     const totalInterest = myProducts?.reduce((acc, p) => acc + (p.interestedBuyers?.length || 0), 0) || 0;
 
-   
-    const contactEmail = "campus.bazaar.iiitdmj@gmail.com"; 
+    
+    const contactEmail = "rishabhc0026@gmail.com"; 
     const mailtoLink = `mailto:${contactEmail}?subject=Inquiry about Featuring Product on Campus Bazaar`;
 
     return (
@@ -66,21 +66,20 @@ const Dashboard = () => {
             <h2 className="text-3xl font-bold mb-4">Your Products</h2>
 
             
-            <div className="alert alert-info shadow-sm mb-6 items-start md:items-center"> 
-              <FaStar className="text-xl mr-2 flex-shrink-0 mt-1 md:mt-0"/> 
+            <div className="alert alert-info shadow-sm mb-6 items-start md:items-center bg-info-content text-white"> 
+              <FaStar className="text-xl mr-2 flex-shrink-0 mt-1 md:mt-0"/>
               <div className="flex-1">
-                <h3 className="font-bold">Want more visibility?</h3>
-                <div className="text-xs md:text-sm"> 
-                    Feature your listing on the homepage! Contact us at{' '}
-                    <a href={mailtoLink} className="link link-primary font-semibold hover:underline">
-                        {contactEmail}
+                <h3 className="font-bold text-white">Want more visibility?</h3> 
+                <div className="text-xs md:text-sm text-white"> 
+                    Feature your listing on the homepage!{' '}
+                    <a href={mailtoLink} className="link link-accent font-semibold hover:underline"> 
+                        Contact us
                     </a>{' '}
                     to learn more.
                 </div>
               </div>
-           
             </div>
-           
+            
 
 
             {isLoadingMyProducts ? <div className="flex justify-center"><Spinner /></div> :
