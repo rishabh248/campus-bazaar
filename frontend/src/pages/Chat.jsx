@@ -71,7 +71,7 @@ const ChatWindow = ({ conversation }) => {
                 setMessages(prev => [...prev, newMessage]);
             }
             queryClient.invalidateQueries({ queryKey: ['conversations'] });
-            queryClient.invalidateQueries({ queryKey: ['messages', newMessage.conversation._id] });
+        
         };
         socket.on('message received', messageListener);
 
@@ -99,7 +99,6 @@ const ChatWindow = ({ conversation }) => {
         setMessages(prev => [...prev, optimisticMessage]);
         setNewMessage('');
         
-        queryClient.invalidateQueries({ queryKey: ['messages', conversation._id] });
     };
 
     if (!conversation) {
