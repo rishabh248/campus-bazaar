@@ -55,7 +55,7 @@ const AdminPanel = () => {
             <thead><tr><th>Title</th><th>Seller</th><th>Price</th><th>Featured</th><th>Actions</th></tr></thead>
             <tbody>{products.map(p => (
                 <tr key={p._id}>
-                    <td>{p.title}</td><td>{p.seller.name}</td><td>?{p.price}</td>
+                    <td>{p.title}</td><td>{p.seller.name}</td><td>&#8377;{p.price}</td>
                     <td><button onClick={() => toggleFeatureMutation.mutate(p._id)} className="btn btn-xs btn-ghost">{p.isFeatured ? <FaToggleOn className="text-success text-lg"/> : <FaToggleOff className="text-lg"/>}</button></td>
                     <td><button onClick={() => deleteProductMutation.mutate(p._id)} className="btn btn-xs btn-error" disabled={deleteProductMutation.isPending}><FaTrash/></button></td>
                 </tr>

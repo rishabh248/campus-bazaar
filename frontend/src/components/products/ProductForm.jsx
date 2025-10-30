@@ -28,7 +28,7 @@ const ProductForm = ({ onSubmit, defaultValues, isSubmitting, buttonText = "Subm
                 {errors.description && <span className="text-error text-sm mt-1">{errors.description.message}</span>}
             </div>
             <div>
-                <label htmlFor="price" className="label"><span className="label-text">Price (?)</span></label>
+                <label htmlFor="price" className="label"><span className="label-text">Price (&#8377;)</span></label>
                 <input
                     id="price"
                     type="number"

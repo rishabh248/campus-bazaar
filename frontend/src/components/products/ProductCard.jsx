@@ -24,7 +24,7 @@ const ProductCard = ({ product }) => {
             </figure>
             <div className="card-body">
                 <h2 className="card-title truncate text-lg" title={title}>{title}</h2>
-                <p className="text-xl font-semibold text-primary">?{price?.toLocaleString('en-IN') ?? 'N/A'}</p>
+                <p className="text-xl font-semibold text-primary">&#8377;{price?.toLocaleString('en-IN') ?? 'N/A'}</p>
                 <div className="text-sm text-gray-500 flex items-center mt-1">
                     <FaMapMarkerAlt className="mr-1 flex-shrink-0" />
                     <span className="truncate">{seller?.name || 'Unknown Seller'}</span>

@@ -3,8 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import Spinner from '../components/ui/Spinner';
-import toast from 'react-hot-toast'; 
-import { FaEdit, FaTrash, FaEye, FaBoxOpen, FaCheckCircle, FaHeart, FaStar, FaCopy } from 'react-icons/fa'; 
+import toast from 'react-hot-toast';
+import { FaEdit, FaTrash, FaEye, FaBoxOpen, FaCheckCircle, FaHeart, FaStar, FaCopy } from 'react-icons/fa';
 
 const StatCard = ({ icon, title, value, isLoading }) => (
     <div className="card bg-base-100 shadow">
@@ -49,10 +49,8 @@ const Dashboard = () => {
     const activeListings = myProducts?.filter(p => p.status === 'available').length || 0;
     const totalInterest = myProducts?.reduce((acc, p) => acc + (p.interestedBuyers?.length || 0), 0) || 0;
 
-   
     const contactEmail = "rishabhc0026@gmail.com";
 
-   
     const handleCopyEmail = async () => {
         try {
             await navigator.clipboard.writeText(contactEmail);
@@ -75,7 +73,6 @@ const Dashboard = () => {
 
             <h2 className="text-3xl font-bold mb-4">Your Products</h2>
 
-            
             <div className="alert alert-info shadow-sm mb-6 items-start md:items-center bg-info-content text-white">
               <FaStar className="text-xl mr-2 flex-shrink-0 mt-1 md:mt-0"/>
               <div className="flex-1">
@@ -84,12 +81,10 @@ const Dashboard = () => {
                     Feature your listing on the homepage! Click the button to copy our contact email.
                 </div>
               </div>
-             
               <button onClick={handleCopyEmail} className="btn btn-sm btn-accent">
                     <FaCopy className="mr-1"/> Copy Email
               </button>
             </div>
-           
 
 
             {isLoadingMyProducts ? <div className="flex justify-center"><Spinner /></div> :
@@ -118,7 +113,7 @@ const Dashboard = () => {
                             {myProducts.map(p => (
                                 <tr key={p._id} className="hover">
                                     <td className="max-w-xs truncate">{p.title}</td>
-                                    <td>₹{p.price}</td>
+                                    <td>&#8377;{p.price}</td>
                                     <td><span className={`badge ${p.status === 'sold' ? 'badge-ghost' : 'badge-success'}`}>{p.status}</span></td>
                                     <td>{p.interestedBuyers?.length || 0}</td>
                                     <td className="flex gap-1 md:gap-2">

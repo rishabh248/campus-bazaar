@@ -10,7 +10,7 @@ const Footer = () => {
                 <p className="font-bold">
                     Campus Bazaar <br />Your one-stop marketplace at IIITDM Jabalpur
                 </p>
-                <p>Copyright © {currentYear} - All rights reserved</p>
+                <p>Copyright &copy; {currentYear} - All rights reserved</p>
             </aside>
         </footer>
     );

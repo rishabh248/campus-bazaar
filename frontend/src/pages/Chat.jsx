@@ -71,6 +71,7 @@ const ChatWindow = ({ conversation }) => {
                 setMessages(prev => [...prev, newMessage]);
             }
             queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            queryClient.invalidateQueries({ queryKey: ['messages', newMessage.conversation._id] });
         };
         socket.on('message received', messageListener);
 
@@ -97,6 +98,8 @@ const ChatWindow = ({ conversation }) => {
         }
         setMessages(prev => [...prev, optimisticMessage]);
         setNewMessage('');
+        
+        queryClient.invalidateQueries({ queryKey: ['messages', conversation._id] });
     };
 
     if (!conversation) {
@@ -151,7 +154,7 @@ const ChatPage = () => {
     return <div className="flex justify-center items-center h-screen"><Spinner size="lg" /></div>;
   }
    if (!user) {
-    return <div className="text-center p-10">Please log in to view messages.</div>; // Added check for user
+    return <div className="text-center p-10">Please log in to view messages.</div>;
   }
 
   return (

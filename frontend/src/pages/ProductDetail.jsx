@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom'; // Added useNavigate
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/axios';
 import Spinner from '../components/ui/Spinner';
@@ -10,7 +10,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
-import { FaUserCircle, FaEnvelope, FaPhone, FaComments } from 'react-icons/fa'; // Added FaComments
+import { FaUserCircle, FaEnvelope, FaPhone, FaComments } from 'react-icons/fa';
 
 const fetchProduct = async (id) => {
     const { data } = await api.get(`/products/${id}`);
@@ -26,10 +26,10 @@ const ProductDetail = () => {
     const { id } = useParams();
     const { user } = useAuth();
     const queryClient = useQueryClient();
-    const navigate = useNavigate(); // Added navigate
+    const navigate = useNavigate();
     const [showContact, setShowContact] = useState(false);
 
-    const { data: product, isLoading, error, isError } = useQuery({ // Added isError
+    const { data: product, isLoading, error, isError } = useQuery({
         queryKey: ['product', id],
         queryFn: () => fetchProduct(id),
         retry: 1,
@@ -45,8 +45,8 @@ const ProductDetail = () => {
      const startChatMutation = useMutation({
         mutationFn: (productId) => api.post('/chat', { productId }),
         onSuccess: (data) => {
-            const conversationId = data.data._id; // Assuming API returns conversation object with _id
-            navigate('/chat', { state: { selectedConversationId: conversationId } }); // Navigate to chat page
+            const conversationId = data.data._id;
+            navigate('/chat', { state: { selectedConversationId: conversationId } });
         },
         onError: (err) => {
             toast.error(err.response?.data?.message || 'Could not start chat.');
@@ -59,8 +59,6 @@ const ProductDetail = () => {
         onSuccess: () => {
             toast.success('Interest shown! Seller notified.');
             queryClient.invalidateQueries({ queryKey: ['product', id] });
-            // Optionally auto-show contact or prompt to start chat
-            // setShowContact(true); // Decide if contact should show automatically
         },
         onError: (err) => {
             toast.error(err.response?.data?.message || 'Could not show interest.');
@@ -70,7 +68,7 @@ const ProductDetail = () => {
     const handleShowInterest = () => {
         if (!user) {
             toast.error("Please login to show interest.");
-            navigate('/login', { state: { from: `/product/${id}` } }); // Redirect to login
+            navigate('/login', { state: { from: `/product/${id}` } });
             return;
         }
         interestMutation.mutate();
@@ -121,7 +119,7 @@ const ProductDetail = () => {
             <div className="card-body lg:w-1/2">
                 {product.status === 'sold' && <div className="badge badge-error font-semibold">SOLD</div>}
                 <h1 className="card-title text-3xl mb-2">{product.title}</h1>
-                <p className="text-2xl font-bold text-primary mb-3">?{product.price.toLocaleString('en-IN')}</p>
+                <p className="text-2xl font-bold text-primary mb-3">&#8377;{product.price.toLocaleString('en-IN')}</p>
                 <div className="flex gap-2 mb-4">
                     <div className="badge badge-outline">{product.category}</div>
                     <div className="badge badge-outline">{product.condition}</div>
@@ -134,7 +132,7 @@ const ProductDetail = () => {
                         <FaUserCircle className="text-3xl text-gray-400" />
                         <div>
                             <div className="font-bold">{product.seller.name}</div>
-                            <div className="text-sm opacity-60">{product.seller.batch} Batch, {product.seller.department}</div>
+                            <div className="text-sm opacity-50">{product.seller.batch} Batch, {product.seller.department}</div>
                         </div>
                     </div>
                      { (isInterested || isSeller) && (
