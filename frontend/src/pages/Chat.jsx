@@ -51,6 +51,7 @@ const ChatWindow = ({ conversation }) => {
         queryFn: () => api.get(`/chat/${conversation._id}/messages`).then(res => res.data),
         enabled: !!conversation,
         onSuccess: (data) => setMessages(data),
+        refetchOnWindowFocus: false,
     });
 
     const scrollToBottom = () => {
@@ -71,7 +72,6 @@ const ChatWindow = ({ conversation }) => {
                 setMessages(prev => [...prev, newMessage]);
             }
             queryClient.invalidateQueries({ queryKey: ['conversations'] });
-        
         };
         socket.on('message received', messageListener);
 
@@ -90,15 +90,15 @@ const ChatWindow = ({ conversation }) => {
             content: newMessage,
         });
 
+        
         const optimisticMessage = {
             _id: Date.now(),
-            sender: user,
+            sender: user, 
             content: newMessage,
             createdAt: new Date().toISOString()
         }
         setMessages(prev => [...prev, optimisticMessage]);
         setNewMessage('');
-        
     };
 
     if (!conversation) {
