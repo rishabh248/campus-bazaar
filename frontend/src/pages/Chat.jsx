@@ -46,22 +46,37 @@ const ChatWindow = ({ conversation }) => {
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
 
-    const { isLoading: isLoadingMessages } = useQuery({
+    
+    const { data: initialMessages, isLoading: isLoadingMessages } = useQuery({
         queryKey: ['messages', conversation?._id],
         queryFn: () => api.get(`/chat/${conversation._id}/messages`).then(res => res.data),
-        enabled: !!conversation,
-        onSuccess: (data) => setMessages(data),
+        enabled: !!conversation, 
+        
+       
         refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchOnMount: true, 
     });
 
+   
+    useEffect(() => {
+        if (initialMessages) {
+            setMessages(initialMessages);
+        } else {
+            setMessages([]); 
+        }
+    }, [initialMessages, conversation]); 
+
+    
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     useEffect(() => {
-        scrollToBottom();
+        scrollToBottom(); 
     }, [messages]);
 
+   
     useEffect(() => {
         if (!socket || !conversation) return;
 
@@ -69,6 +84,7 @@ const ChatWindow = ({ conversation }) => {
 
         const messageListener = (newMessage) => {
             if (newMessage.conversation._id === conversation._id) {
+               
                 setMessages(prev => [...prev, newMessage]);
             }
             queryClient.invalidateQueries({ queryKey: ['conversations'] });
@@ -80,6 +96,7 @@ const ChatWindow = ({ conversation }) => {
         };
     }, [socket, conversation, queryClient]);
 
+   
     const handleSendMessage = (e) => {
         e.preventDefault();
         if (!newMessage.trim() || !socket) return;
@@ -90,13 +107,14 @@ const ChatWindow = ({ conversation }) => {
             content: newMessage,
         });
 
-        
+       
         const optimisticMessage = {
             _id: Date.now(),
-            sender: user, 
+            sender: user,
             content: newMessage,
             createdAt: new Date().toISOString()
         }
+       
         setMessages(prev => [...prev, optimisticMessage]);
         setNewMessage('');
     };
