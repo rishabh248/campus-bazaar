@@ -51,21 +51,19 @@ export const AuthProvider = ({ children }) => {
                 try {
                     await refreshUserToken();
                 } catch (error) {
-                    // No valid refresh cookie found, user is logged out.
                 }
             }
             setLoading(false);
         };
         initializeAuth();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [refreshUserToken, clearAuthState]);
 
     const login = async (email, password) => {
-        await api.post('/auth/login', { email, password });
-        await refreshUserToken(); 
-        const { data: userData } = await api.get('/auth/me');
-        toast.success(`Welcome back, ${userData.name}!`);
-        return userData;
+        const { data } = await api.post('/auth/login', { email, password });
+        localStorage.setItem('accessToken', data.accessToken);
+        setUser(data.user);
+        toast.success(`Welcome back, ${data.user.name}!`);
+        return data.user;
     };
 
     const register = async (userData) => {
