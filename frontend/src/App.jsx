@@ -3,7 +3,6 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import ProductDetail from './pages/ProductDetail';
 import CreateProduct from './pages/CreateProduct';
 import Dashboard from './pages/Dashboard';
@@ -14,7 +13,7 @@ import AdminRoute from './components/auth/AdminRoute';
 import EditProduct from './pages/EditProduct';
 import ChatPage from './pages/Chat';
 import BrowseProductsPage from './pages/BrowseProducts';
-import { Analytics } from '@vercel/analytics/react'; 
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   return (
@@ -24,10 +23,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/products" element={<BrowseProductsPage />} />
-          
+
           <Route element={<ProtectedRoute />}>
             <Route path="/sell" element={<CreateProduct />} />
             <Route path="/product/:id/edit" element={<EditProduct />} />
@@ -43,7 +41,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
-      <Analytics /> 
+      <Analytics />
     </div>
   );
 }

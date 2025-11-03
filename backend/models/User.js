@@ -15,9 +15,13 @@ const userSchema = new mongoose.Schema({
         },
         message: 'Invalid IIITDMJ email. Use format like 24bec103@iiitdmj.ac.in (check branch code)'
     },
-    index: true // Index email for faster lookups
+    index: true
   },
-  phone: { type: String, required: [true, 'Please provide your phone number'], unique: true },
+  phone: { 
+    type: String, 
+    trim: true,
+    default: '' 
+  },
   password: { type: String, required: [true, 'Please provide a password'], minlength: 6, select: false },
   batch: { type: String, required: true },
   department: { type: String, required: true, enum: ['CSE', 'ECE', 'ME', 'Design', 'SM'] },

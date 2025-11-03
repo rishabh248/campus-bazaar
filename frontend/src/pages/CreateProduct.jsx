@@ -16,7 +16,7 @@ const CreateProduct = () => {
         mutationFn: (newProduct) => api.post('/products', newProduct),
         onSuccess: (data) => {
             toast.success("Product created successfully!");
-            queryClient.invalidateQueries({ queryKey: ['myProducts'] }); // Invalidate myProducts as well
+            queryClient.invalidateQueries({ queryKey: ['myProducts'] }); 
             queryClient.invalidateQueries({ queryKey: ['allProducts'] });
             navigate(`/product/${data.data._id}`);
         },

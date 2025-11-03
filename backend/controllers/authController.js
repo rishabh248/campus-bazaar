@@ -3,27 +3,7 @@ const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const { sendTokenResponse, generateAccessToken } = require('../utils/tokenUtils');
 
-const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, phone, password, batch, department, hostel, roomNumber } = req.body;
-  if (!name || !email || !phone || !password || !batch || !department) {
-    res.status(400);
-    throw new Error('Please fill all required fields');
-  }
-  const userExists = await User.findOne({ $or: [{ email }, { phone }] });
-  if (userExists) {
-    res.status(400);
-    throw new Error('User with this email or phone number already exists');
-  }
-  const adminEmails = (process.env.ADMIN_EMAILS || '').split(',');
-  const role = adminEmails.includes(email) ? 'admin' : 'user';
-  const user = await User.create({ name, email, phone, password, batch, department, hostel, roomNumber, role });
-  if (user) {
-    sendTokenResponse(user, 201, res);
-  } else {
-    res.status(400);
-    throw new Error('Invalid user data');
-  }
-});
+
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -45,19 +25,15 @@ const refreshToken = asyncHandler(async (req, res) => {
         res.status(401);
         throw new Error('Refresh token not found, please login again.');
     }
-
     try {
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
         const user = await User.findById(decoded.id);
-
         if (!user) {
             res.status(401);
             throw new Error('User not found.');
         }
-
         const accessToken = generateAccessToken(user._id);
         const sanitizedUser = { _id: user._id, name: user.name, email: user.email, role: user.role };
-
         res.json({ accessToken, user: sanitizedUser });
     } catch (error) {
         res.status(403);
@@ -85,4 +61,4 @@ const getMe = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, loginUser, refreshToken, logoutUser, getMe };
+module.exports = { loginUser, refreshToken, logoutUser, getMe }; 
