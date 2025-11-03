@@ -23,7 +23,8 @@ const BrowseProductsPage = () => {
 
     const { data: products, isLoading, error } = useQuery({
         queryKey: ['allProducts', searchTerm, category, sortBy],
-        queryFn: fetchProducts,
+        queryFn: fetch.p,
+        refetchOnWindowFocus: false, 
     });
 
     return (

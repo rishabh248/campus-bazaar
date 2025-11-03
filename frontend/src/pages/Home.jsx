@@ -21,7 +21,7 @@ const Hero = () => (
 );
 
 const FeatureCard = ({ icon, title, description }) => (
-    <div className="card bg-base-100 shadow-md h-full"> {/* Ensure cards have same height */}
+    <div className="card bg-base-100 shadow-md h-full">
         <div className="card-body items-center text-center">
             <div className="p-4 bg-primary/20 rounded-full mb-3">
                 {icon}
@@ -35,8 +35,9 @@ const FeatureCard = ({ icon, title, description }) => (
 
 const Home = () => {
     const { data: products, isLoading, error } = useQuery({
-        queryKey: ['products'], // Use a more specific key if filters were applied here
+        queryKey: ['products'],
         queryFn: () => api.get('/products?status=available').then(res => res.data),
+        refetchOnWindowFocus: false, 
     });
 
     const featuredProducts = products?.filter(p => p.isFeatured) || [];

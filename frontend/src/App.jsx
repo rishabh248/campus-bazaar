@@ -14,6 +14,7 @@ import AdminRoute from './components/auth/AdminRoute';
 import EditProduct from './pages/EditProduct';
 import ChatPage from './pages/Chat';
 import BrowseProductsPage from './pages/BrowseProducts';
+import { Analytics } from '@vercel/analytics/react'; 
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/products" element={<BrowseProductsPage />} />
-
+          
           <Route element={<ProtectedRoute />}>
             <Route path="/sell" element={<CreateProduct />} />
             <Route path="/product/:id/edit" element={<EditProduct />} />
@@ -42,6 +43,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <Analytics /> 
     </div>
   );
 }
