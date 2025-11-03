@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { FaGoogle } from 'react-icons/fa';
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
     const { login } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || '/dashboard'; // Redirect to dashboard on successful login
+    const [searchParams] = useSearchParams();
+
+    const from = location.state?.from?.pathname || '/dashboard';
+    
+    useEffect(() => {
+        const authError = searchParams.get('error');
+        if (authError) {
+            toast.error('Google Auth Failed. Please use your @iiitdmj.ac.in email.');
+        }
+    }, [searchParams]);
 
     const onSubmit = async (formData) => {
         try {
@@ -19,6 +29,8 @@ const Login = () => {
             toast.error(error.response?.data?.message || "Login failed. Please check your credentials.");
         }
     };
+    
+    const googleLoginUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/auth/google`;
 
     return (
         <div className="flex items-center justify-center min-h-[70vh] px-4 py-12">
@@ -26,8 +38,16 @@ const Login = () => {
                 <form onSubmit={handleSubmit(onSubmit)} className="card-body">
                     <div className="text-center mb-6">
                         <h1 className="text-2xl font-bold">Login to Campus Bazaar</h1>
-                        <p className="text-base-content/70 mt-1">Use your IIITDM Jabalpur email</p>
+                        <p className="text-base-content/70 mt-1">Use your IIITDMJ email</p>
                     </div>
+                    
+                    <a href={googleLoginUrl} className="btn btn-outline border-gray-400">
+                        <FaGoogle className="mr-2 text-red-500" />
+                        Sign in with Google
+                    </a>
+                    
+                    <div className="divider">OR</div>
+                    
                     <div className="form-control">
                         <label htmlFor="email" className="label"><span className="label-text">Email</span></label>
                         <input
