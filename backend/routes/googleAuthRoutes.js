@@ -1,7 +1,8 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const { sendTokenResponse } = require('../utils/tokenUtils');
+// Hum poora 'sendTokenResponse' nahi, sirf 'generateRefreshToken' import karenge
+const { generateRefreshToken } = require('../utils/tokenUtils');
 
 router.get(
   '/google',
@@ -17,7 +18,21 @@ router.get(
     session: false,
   }),
   (req, res) => {
-    sendTokenResponse(req.user, 200, res);
+    
+    
+    const refreshToken = generateRefreshToken(req.user._id);
+
+    
+    const refreshTokenOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      path: '/',
+    };
+    res.cookie('refreshToken', refreshToken, refreshTokenOptions);
+
+  
     res.redirect(`${process.env.CORS_ORIGIN}/dashboard`);
   }
 );
