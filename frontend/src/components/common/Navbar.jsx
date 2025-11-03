@@ -54,9 +54,9 @@ const Navbar = () => {
                         </div>
                     </>
                 ) : (
-                    
                     <div className="hidden sm:flex items-center">
-                        <Link to="/login" className="btn btn-primary">Login</Link>
+                        <Link to="/login" className="btn btn-ghost">Login</Link>
+                        <Link to="/register" className="btn btn-primary ml-2">Register</Link>
                     </div>
                 )}
             </div>

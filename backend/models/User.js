@@ -17,11 +17,7 @@ const userSchema = new mongoose.Schema({
     },
     index: true
   },
-  phone: { 
-    type: String, 
-    trim: true,
-    default: '' 
-  },
+  phone: { type: String, required: [true, 'Please provide your phone number'], unique: true },
   password: { type: String, required: [true, 'Please provide a password'], minlength: 6, select: false },
   batch: { type: String, required: true },
   department: { type: String, required: true, enum: ['CSE', 'ECE', 'ME', 'Design', 'SM'] },

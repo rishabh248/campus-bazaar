@@ -1,33 +1,32 @@
 import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate, useLocation, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FaGoogle } from 'react-icons/fa';
-import Spinner from '../components/ui/Spinner'; 
+import Spinner from '../components/ui/Spinner';
 
 const Login = () => {
-    const { login, user, loading } = useAuth(); 
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+    const { login, user, loading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const [searchParams] = useSearchParams();
 
     const from = location.state?.from?.pathname || '/dashboard';
-    
-    useEffect(() => {
-        const authError = searchParams.get('error');
-        if (authError) {
-            toast.error('Google Auth Failed. Please use your @iiitdmj.ac.in email.');
-        }
-    }, [searchParams]);
 
-    
     useEffect(() => {
         if (!loading && user) {
-            navigate(from, { replace: true }); 
+            navigate(from, { replace: true });
         }
     }, [user, loading, navigate, from]);
-    
-    const googleLoginUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/auth/google`;
+
+    const onSubmit = async (formData) => {
+        try {
+            await login(formData.email, formData.password);
+            navigate(from, { replace: true });
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Login failed. Please check your credentials.");
+        }
+    };
 
     if (loading) {
          return <div className="flex justify-center items-center h-screen"><Spinner size="lg" /></div>;
@@ -37,17 +36,44 @@ const Login = () => {
         !user && (
             <div className="flex items-center justify-center min-h-[70vh] px-4 py-12">
                 <div className="card w-full max-w-md shadow-2xl bg-base-100">
-                    <div className="card-body">
+                    <form onSubmit={handleSubmit(onSubmit)} className="card-body">
                         <div className="text-center mb-6">
-                            <h1 className="text-2xl font-bold">Welcome to Campus Bazaar</h1>
-                            <p className="text-base-content/70 mt-1">Please sign in with your IIITDMJ Google account to continue.</p>
+                            <h1 className="text-2xl font-bold">Login to Campus Bazaar</h1>
+                            <p className="text-base-content/70 mt-1">Use your IIITDMJ email</p>
                         </div>
-                        
-                        <a href={googleLoginUrl} className="btn btn-primary">
-                            <FaGoogle className="mr-2" />
-                            Sign in with Google
-                        </a>
-                    </div>
+                        <div className="form-control">
+                            <label htmlFor="email" className="label"><span className="label-text">Email</span></label>
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="rollnumber@iiitdmj.ac.in"
+                                {...register("email", { required: "Email is required" })}
+                                className={`input input-bordered ${errors.email ? 'input-error' : ''}`}
+                                aria-invalid={errors.email ? "true" : "false"}
+                             />
+                            {errors.email && <span className="text-error text-xs mt-1">{errors.email.message}</span>}
+                        </div>
+                        <div className="form-control">
+                            <label htmlFor="password"className="label"><span className="label-text">Password</span></label>
+                            <input
+                                id="password"
+                                type="password"
+                                placeholder="password"
+                                {...register("password", { required: "Password is required" })}
+                                 className={`input input-bordered ${errors.password ? 'input-error' : ''}`}
+                                 aria-invalid={errors.password ? "true" : "false"}
+                            />
+                             {errors.password && <span className="text-error text-xs mt-1">{errors.password.message}</span>}
+                        </div>
+                        <div className="form-control mt-6">
+                            <button className="btn btn-primary" type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? <span className="loading loading-spinner"></span> : "Login"}
+                            </button>
+                        </div>
+                         <div className="text-center mt-4 text-sm">
+                            <p>Don't have an account? <Link to="/register" className="link link-primary">Register here</Link></p>
+                        </div>
+                    </form>
                 </div>
             </div>
         )

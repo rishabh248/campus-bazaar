@@ -3,7 +3,27 @@ const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const { sendTokenResponse, generateAccessToken } = require('../utils/tokenUtils');
 
-
+const registerUser = asyncHandler(async (req, res) => {
+  const { name, email, phone, password, batch, department, hostel, roomNumber } = req.body;
+  if (!name || !email || !phone || !password || !batch || !department) {
+    res.status(400);
+    throw new Error('Please fill all required fields');
+  }
+  const userExists = await User.findOne({ $or: [{ email }, { phone }] });
+  if (userExists) {
+    res.status(400);
+    throw new Error('User with this email or phone number already exists');
+  }
+  const adminEmails = (process.env.ADMIN_EMAILS || '').split(',');
+  const role = adminEmails.includes(email) ? 'admin' : 'user';
+  const user = await User.create({ name, email, phone, password, batch, department, hostel, roomNumber, role });
+  if (user) {
+    sendTokenResponse(user, 201, res);
+  } else {
+    res.status(400);
+    throw new Error('Invalid user data');
+  }
+});
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -61,4 +81,4 @@ const getMe = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { loginUser, refreshToken, logoutUser, getMe }; 
+module.exports = { registerUser, loginUser, refreshToken, logoutUser, getMe };

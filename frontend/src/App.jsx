@@ -3,6 +3,7 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import ProductDetail from './pages/ProductDetail';
 import CreateProduct from './pages/CreateProduct';
 import Dashboard from './pages/Dashboard';
@@ -23,6 +24,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/products" element={<BrowseProductsPage />} />
 

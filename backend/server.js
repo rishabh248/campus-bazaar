@@ -10,10 +10,6 @@ const connectDB = require('./config/db');
 const { apiLimiter } = require('./middleware/rateLimiter');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
-const passport = require('passport');
-const session = require('express-session');
-require('./config/passport-setup'); 
-
 const http = require('http');
 const { Server } = require('socket.io');
 
@@ -23,7 +19,6 @@ const Conversation = require('./models/Conversation');
 dotenv.config();
 
 const authRoutes = require('./routes/authRoutes');
-const googleAuthRoutes = require('./routes/googleAuthRoutes');
 const productRoutes = require('./routes/productRoutes');
 const interestRoutes = require('./routes/interestRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -31,7 +26,9 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 
 connectDB();
+
 const app = express();
+
 app.set('trust proxy', 1);
 
 app.use(helmet());
@@ -50,25 +47,12 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
-
-app.use(
-  session({
-    secret: process.env.JWT_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === 'production' },
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use(mongoSanitize());
+
 
 app.get('/api', (req, res) => res.json({ message: 'Welcome to Campus Bazaar API' }));
 app.use('/api', apiLimiter);
 app.use('/api/auth', authRoutes);
-app.use('/api/auth', googleAuthRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/interests', interestRoutes);
 app.use('/api/admin', adminRoutes);
@@ -78,9 +62,9 @@ app.use('/api/chat', chatRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const server = http.createServer(app); 
+const server = http.createServer(app);
 
-const io = new Server(server, { 
+const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
     origin: process.env.CORS_ORIGIN,
@@ -112,7 +96,7 @@ io.on('connection', (socket) => {
     try {
       let msg = await Message.create({ conversation: conversationId, sender: senderId, content: content });
       msg = await msg.populate('sender', 'name');
-      msg = await msg.populate({ path: 'conversation', populate: { path: 'participants', select: '_id name' } }); 
+      msg = await msg.populate({ path: 'conversation', populate: { path: 'participants', select: '_id name' } });
 
       if (!msg.conversation) {
           console.error('Conversation not found for message:', msg);

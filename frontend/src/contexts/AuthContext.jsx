@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useContext, useCallback } fr
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { jwtDecode } from 'jwt-decode';
-import Spinner from '../components/ui/Spinner'; 
+import Spinner from '../components/ui/Spinner';
 
 const AuthContext = createContext(null);
 
@@ -10,14 +10,13 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(true);
 
     const clearAuthState = useCallback(() => {
         localStorage.removeItem('accessToken');
         setUser(null);
     }, []);
 
-   
     const refreshUserToken = useCallback(async () => {
         try {
             const { data } = await api.post('/auth/refresh-token'); 
@@ -52,13 +51,14 @@ export const AuthProvider = ({ children }) => {
                 try {
                     await refreshUserToken();
                 } catch (error) {
-                  
+                    // No valid refresh cookie found, user is logged out.
                 }
             }
-            setLoading(false); 
+            setLoading(false);
         };
         initializeAuth();
-    }, []); 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const login = async (email, password) => {
         await api.post('/auth/login', { email, password });
@@ -67,6 +67,16 @@ export const AuthProvider = ({ children }) => {
         toast.success(`Welcome back, ${userData.name}!`);
         return userData;
     };
+
+    const register = async (userData) => {
+        const { data } = await api.post('/auth/register', userData);
+        localStorage.setItem('accessToken', data.accessToken);
+        const { data: newUser } = await api.get('/auth/me');
+        setUser(newUser);
+        toast.success(`Welcome to Campus Bazaar, ${newUser.name}!`);
+        return newUser;
+    };
+
 
     const logout = async () => {
         try {
@@ -79,7 +89,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const contextValue = { user, setUser, loading, login, logout };
+    const contextValue = { user, setUser, loading, login, register, logout };
 
     return (
         <AuthContext.Provider value={contextValue}>
