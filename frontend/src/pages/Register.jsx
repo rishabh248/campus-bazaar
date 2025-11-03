@@ -10,16 +10,19 @@ const Register = () => {
     const navigate = useNavigate();
 
     const onSubmit = async (data) => {
-        const year = data.email.substring(0, 2);
+        const email = data.email.toLowerCase();
+        const year = email.substring(0, 2);
         const batch = `20${year}`;
 
-        let department = 'Other';
-        if (data.email.includes('bec')) department = 'ECE';
-        else if (data.email.includes('bcs')) department = 'CSE';
-        else if (data.email.includes('bme')) department = 'ME';
-        else if (data.email.includes('bds')) department = 'Design';
-        else if (data.email.includes('bsm')) department = 'SM';
-
+        const match = email.match(/^\d{2}([a-zA-Z]+)\d{3}/i);
+        const branchCode = match ? match[1].toUpperCase() : '';
+        
+        let department = 'SM';
+        if (branchCode === 'BEC') department = 'ECE';
+        else if (branchCode === 'BCS') department = 'CSE';
+        else if (branchCode === 'BME') department = 'ME';
+        else if (branchCode === 'BDS') department = 'Design';
+        
         const fullData = { ...data, batch, department };
         try {
             await registerUser(fullData);
@@ -27,6 +30,37 @@ const Register = () => {
         } catch (error) {
             toast.error(error.response?.data?.message || "Registration failed. Please try again.");
         }
+    };
+
+    const validateEmailRules = (v) => {
+        const email = v.toLowerCase();
+        const basicRegex = /^\d{2}([a-zA-Z]+)\d{3}@iiitdmj\.ac\.in$/;
+        const match = email.match(basicRegex);
+
+        if (!match) return 'Invalid IIITDMJ email format.';
+
+        const year = parseInt(email.substring(0, 2), 10);
+        const branch = match[1];
+        const roll = parseInt(email.slice(-15, -12), 10);
+
+        if (year < 21 || year > 25) return 'Registration year must be between 21 and 25.';
+
+        switch (branch) {
+            case 'bec':
+                if (roll < 0 || roll > 150) return 'BEC roll number must be between 0 and 150.';
+                break;
+            case 'bcs':
+                if (roll < 0 || roll > 350) return 'BCS roll number must be between 0 and 350.';
+                break;
+            case 'bsm':
+            case 'bme':
+            case 'bds':
+                if (roll < 0 || roll > 99) return 'Roll number for this branch must be under 100.';
+                break;
+            default:
+                return 'Invalid branch code in email.';
+        }
+        return true;
     };
 
     return (
@@ -58,15 +92,12 @@ const Register = () => {
                             placeholder="24bec103@iiitdmj.ac.in"
                             {...register("email", {
                                 required: "Email is required",
-                                pattern: {
-                                     value: /^\d{2}(bec|bcs|bds|bme|bsm)\d{3}@iiitdmj\.ac\.in$/i,
-                                     message: "Use format like 24bec103@iiitdmj.ac.in"
-                                 }
+                                validate: validateEmailRules
                             })}
                              className={`input input-bordered ${errors.email ? 'input-error' : ''}`}
                              aria-invalid={errors.email ? "true" : "false"}
                          />
-                        <label className="label"><span className="label-text-alt">{errors.email ? errors.email.message : "Must be a valid IIITDMJ roll number email"}</span></label>
+                        <label className="label"><span className="label-text-alt text-error">{errors.email ? errors.email.message : ""}</span></label>
                     </div>
                      <div className="form-control">
                         <label htmlFor="phone" className="label"><span className="label-text">Phone Number</span></label>
